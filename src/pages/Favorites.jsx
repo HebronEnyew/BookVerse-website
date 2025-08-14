@@ -1,25 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Favorites = () => {
-  const { user, openAuthModal } = useAuth()
+  const { user, openAuthModal } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
-  //const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   // Load favorites once
   useEffect(() => {
-    if(!user) {
-      openAuthModal("signin");
-      navigate("/")
+    if (!user) {
+      openAuthModal('signin');
+      navigate('/');
       return;
     }
+
     const favs = JSON.parse(localStorage.getItem('favorites')) || [];
     setFavorites(favs);
   }, [user, openAuthModal, navigate]);
 
-  if(!user) return null;
+  if (!user) return null;
+
+  // Remove a book from favorites
+  const removeFavorite = (bookId) => {
+    const updatedFavs = favorites.filter((book) => book.id !== bookId);
+    setFavorites(updatedFavs);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavs));
+  };
+
   if (favorites.length === 0) {
     return (
       <div className="p-6 text-center text-gray-600">
@@ -51,15 +59,10 @@ const Favorites = () => {
           </p>
 
           <button
-            className={`mt-3 px-3 py-1 rounded ${
-              favorites.some((fav) => fav.id === book.id)
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-200 text-gray-700'
-            }`}
+            onClick={() => removeFavorite(book.id)}
+            className="mt-3 px-3 py-1 rounded bg-red-500 text-white"
           >
-            {favorites.some((fav) => fav.id === book.id)
-              ? 'Remove from Favorites'
-              : 'Add to Favorites'}
+            Remove from Favorites
           </button>
         </div>
       ))}
