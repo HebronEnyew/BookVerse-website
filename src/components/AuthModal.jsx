@@ -1,5 +1,5 @@
 import React from "react";
-import Modal from "./modal";
+import Modal from "./Modal";
 import { useAuth } from "../context/AuthContext";
 import SignIn from "../pages/Login";
 import Register from "../pages/Register";
