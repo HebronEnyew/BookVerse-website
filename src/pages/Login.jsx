@@ -1,6 +1,33 @@
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import React from 'react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
+import { auth } from './firebase';
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState(''); 
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      console.log("Login successful:", userCredential);
+      toast.success(`user successfully logged in`, {
+        position: "top-right",
+      });
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast.error(`Login failed: ${error.message}`, {
+        position: "bottom-right",
+      });
+    }
+  }
   return (
     <div className="min-h-screen bg-amber-50">
       <div className="container mx-auto px-4 py-16 flex justify-center">
@@ -13,22 +40,24 @@ const Login = () => {
             <p className="text-gray-500 mt-2">Sign in to your BookVerse account</p>
           </div>
           
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 ">
                 Email Address
               </label>
               <input
                 type="email"
                 id="email"
-                className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 "
                 placeholder="your@email.com"
+                value={email}
+                onChange={(e)=> setEmail(e.target.value)}
               />
             </div>
             
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 required">
                   Password
                 </label>
                 <a href="#" className="text-xs text-amber-700 hover:text-amber-900">Forgot password?</a>
@@ -36,8 +65,10 @@ const Login = () => {
               <input
                 type="password"
                 id="password"
-                className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 required"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e)=> setPassword(e.target.value)}
               />
             </div>
             

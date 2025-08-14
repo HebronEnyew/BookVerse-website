@@ -1,6 +1,52 @@
-import React from 'react'
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {auth, db} from './firebase'; 
+import {setDoc, doc} from 'firebase/firestore';
+import { toast } from 'react-toastify';
 
 const Register = () => {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword ] = useState('');
+  const navigate = useNavigate();
+
+  const handleRegistration = async (e)=>{
+    e.preventDefault();
+
+     if (!fullName || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+
+      toast.success(`User successfully registered`, {
+        position: "top-right",
+      });
+      navigate("/login");
+      if(user)
+      await setDoc(doc(db, 'users', user.uid), {
+          fullName,
+          email,
+        })
+
+    } catch (error) {
+      console.log(`${error}`); 
+      toast.error(`error ${error}`, {
+        position: "bottom-right", 
+      });
+    }
+  }
+
   return (
     <div className="min-h-screen bg-amber-50">
       <div className="container mx-auto px-4 py-16 flex justify-center">
@@ -13,7 +59,7 @@ const Register = () => {
             <p className="text-gray-500 mt-2">Join BookVerse to save your favorite reads</p>
           </div>
           
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleRegistration}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Full Name
@@ -21,8 +67,10 @@ const Register = () => {
               <input
                 type="text"
                 id="name"
+                value={fullName}
                 className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                placeholder="John Doe"
+                placeholder="Hebron Enyew"
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
             
@@ -35,7 +83,8 @@ const Register = () => {
                 id="email"
                 className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="your@email.com"
-              />
+                onChange={(e)=> setEmail(e.target.value)}
+                />
             </div>
             
             <div>
@@ -47,6 +96,7 @@ const Register = () => {
                 id="password"
                 className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="••••••••"
+                onChange={(e)=> setPassword(e.target.value)}
               />
               <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
             </div>
@@ -58,8 +108,10 @@ const Register = () => {
               <input
                 type="password"
                 id="confirm-password"
+                value={confirmPassword}
                 className="w-full px-4 py-2 border border-amber-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 placeholder="••••••••"
+                onChange={(e)=> setConfirmPassword(e.target.value)}
               />
             </div>
             

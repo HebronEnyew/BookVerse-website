@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchBooks } from '../services/booksApi';
-import Navbar from '../components/Header';  
-import { FiChevronLeft, FiChevronRight, FiArrowRight, FiBook } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiArrowRight, FiBook, FiSearch } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 
 const trendyCategories = [
@@ -18,6 +19,9 @@ const Home = () => {
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const loadBooks = async () => {
@@ -29,6 +33,7 @@ const Home = () => {
                 const data = await fetchBooks(randomCategory);
                 setBooks(data);
                 setLoading(false);
+
             } catch (error) {
                 console.error("Error fetching books:", error);
                 setLoading(false);
@@ -37,6 +42,15 @@ const Home = () => {
         
         loadBooks();
     }, []);
+
+
+        useEffect(()=>{
+          const interval = setInterval(()=>{
+            setCurrentIndex(prevIndex => 
+              prevIndex === books.length - 1 ? 0 : prevIndex + 1)
+          }, 5000)
+          return () => clearInterval(interval); 
+        },[books.length])
 
     const nextBook = () => {
         setCurrentIndex(prevIndex => 
@@ -52,10 +66,16 @@ const Home = () => {
 
     const book = books[currentIndex];
 
+    const handleSearch = (e)=>{
+        e.preventDefault();
+        if(searchTerm.trim()){
+            navigate(`/browse?query=${encodeURIComponent(searchTerm)}`)
+        }
+    }
+
     return (
-        <div className="min-h-screen pb-12 text-white  text-center bg-cream" >
-          <Navbar />
-            <div className="relative h-[80vh] mb-[60px]  max-sm:w-[500px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
+        <div className="min-h-screen pb-12 text-center bg-cream" >
+            <div className="relative h-[90vh] mb-[60px]  max-sm:w-[500px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
             <div
                 className="absolute inset-0 bg-contain bg-center w-full "
                 style={{
@@ -65,16 +85,35 @@ const Home = () => {
 
             <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
+                <form
+                  onSubmit={handleSearch}
+                  className="relative"
+                >
+                          <input
+                            type="text"
+                            value={searchTerm}
+                            onChange = {(e) => {
+                                e.preventDefault();
+                                setSearchTerm(e.target.value);
+                            }}
+                            placeholder="Search books..."
+                            className="pl-10 pr-4 py-2 w-[300px] mt-5 rounded-full text-sm bg-amber-50 text-gray-800 placeholder-gray-800 
+                                      focus:outline-none focus:ring-2 focus:ring-amber-500 border border-amber-600"
+                          />
+                          <button type="submit" className="absolute md:left-[764px] mt-3 top-1/2 transform -translate-y-1/2 text-amber-600">
+                            <FiSearch />
+                          </button>
+                </form>
             <div className="relative z-10 flex items-center justify-center h-full px-6 text-white">
-                <div className="text-center max-w-2xl">
-                <h1 className="text-5xl font-bold mb-6">
-                    Discover Worlds Between <span className="text-[#fbbf24]">Pages</span>
+                <div className="text-center max-w-2xl text-[#f8f4f8]">
+                <h1 className="text-5xl font-bold mb-6 text-white">
+                    Discover Worlds Between <span className="text-amber-600">Pages</span>
                 </h1>
-                <p className="text-lg mb-8">
+                <p className="text-lg mb-8 text-white font-semibold">
                     Explore our curated collection of trending fiction, thrilling page-turners, and transformative self-help books.
                 </p>
-                <button className="px-8 py-3 bg-[#b45309] text-white rounded-md hover:bg-opacity-90 transition">
-                    Browse Collection <FiArrowRight className="inline ml-2" />
+                <button className="px-8 py-3 bg-[#b45309] rounded-md hover:bg-opacity-90 transition text-white">
+                   <a href="/browse">Browse Collection</a>  <FiArrowRight className="inline ml-2" />
                 </button>
                 </div>
             </div>
@@ -112,23 +151,11 @@ const Home = () => {
                                     {book.volumeInfo.description?.slice(0, 200) + '...' || 
                                     'Discover this trending book that everyone is talking about.'}
                                 </p>
-                                <button 
-                                    className="px-6 py-2 rounded-md hover:opacity-90 transition bg-secondaryColor text-white"
-                                >
-                                    READ MORE →
-                                </button>
+                              
                             </div>
                             
                             {/* Right arrow */}
-                            <button 
-                                onClick={nextBook}
-                                className="absolute right-0 md:right-[-60px] top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 hover:bg-gray-100 transition"
-                                aria-label="Next book"
-                            >
-                                <FiChevronRight className="w-6 h-6 text-secondaryColor" />
-                            </button>
-
-                            {/* Book image */}
+                            
                             <div className="lg:w-1/2 relative">
                                 <img
                                     src={book.volumeInfo.imageLinks?.thumbnail || 
@@ -138,6 +165,14 @@ const Home = () => {
                                     style={{ maxHeight: '500px', objectFit: 'contain' }}
                                 />
                             </div>
+                            <button 
+                                onClick={nextBook}
+                                className="absolute right-0 md:right-[-60px] top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 hover:bg-gray-100 transition"
+                                aria-label="Next book"
+                            >
+                                <FiChevronRight className="w-6 h-6 text-secondaryColor" />
+                            </button>
+                            
                         </div>
                     )
                 )}
@@ -160,16 +195,17 @@ const Home = () => {
                     <h2 className="text-3xl font-light text-gray-800 mb-12 text-center font-serif">Featured Books</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
                     {books.slice(0,5).map((book) => (
-                        <div key={book.id} className="bg-[#dfdace] rounded-md shadow-sm overflow-hidden w-[200px] h-[350px] mx-auto">
+                        <div key={book.id} className="bg-[#F5EAD6] rounded-md shadow-lg overflow-hidden w-[200px] h-[350px] mx-auto">
                         <div className="p-6 font-serif ">
-                            <img src={book.volumeInfo.imageLinks?.thumbnail} alt="book.volumeInfo.title" className='w-[150px] h-[200px] mx-auto object-cover p-5 bg-gray-50' />
+                            <img src={book.volumeInfo.imageLinks?.thumbnail} alt="book.volumeInfo.title" className='w-[150px] h-[200px] mx-auto object-cover p-2 bg-gray-50' />
                             <h3 className="text-md font-semibold text-gray-600 mb-1">{book.volumeInfo.title.length > 10 ? `${book.volumeInfo.title.slice(0,15)}...` : book.volumeInfo.title}</h3>
-                            <p className="text-gray-600 mb-2">{book.volumeInfo.authors.length > 5 ? `${book.volumeInfo.authors?.join(', ').slice(0,10)}` : book.volumeInfo.authors}</p>  
-                            <button className='text-gray-600 my-1 font-semibold py-2 px-2  border-0 rounded-2xl bg-cream mx-auto flex justify-center'>More Details</button>                      </div>
+                            <p className="text-gray-600 mb-2">{book.volumeInfo.authors.length > 5 ? `${book.volumeInfo.authors?.join(', ').slice(0,2)}` : book.volumeInfo.authors}</p>  
+                            {/* <button className='text-gray-600 my-1 text-1xl py-2 px-2  border-0 rounded-2xl bg-cream mx-auto flex justify-center'>More Details</button>                       */}
+                            </div>
                         </div>
                     ))}
                         </div>
-                    <button className='bg-cream text-gray-700 flex items-end mt-5 md:mt-10 max-md:items-center md:ml-[500px] lg:ml-[900px] font-light'>See More books →</button>
+                    <Link to="/browse" className='bg-cream text-gray-700 flex items-end mt-5 md:mt-10 max-md:items-center md:ml-[500px] lg:ml-[900px] font-light'>See More books →</Link>
                     </div>
                 </div>
                 </div>

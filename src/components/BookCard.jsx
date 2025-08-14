@@ -1,31 +1,72 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext'
 
-const BookCard = () => {
+const BookCard = ({ id, title, author, image }) => {
+  const { user, openAuthModal } = useAuth();
+  const [isFav, setIsFav] = useState(false);
+  
+  const toggleFav = () => {
+    
+   if (!user) {
+      openAuthModal('signin');
+    return;
+  }
+  const favs = JSON.parse(localStorage.getItem('favorites')) || [];
+
+  if (isFav) {
+    const updatedFavs = favs.filter(book => book.id !== id);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavs));
+    setIsFav(false);
+  } else {
+    localStorage.setItem('favorites', JSON.stringify([...favs, { id, title, author, image }]));
+    setIsFav(true);
+  }
+};
+
+useEffect(() => {
+    const favs = JSON.parse(localStorage.getItem('favorites')) || [];
+    const found = favs.some(book => book.id === id);
+    setIsFav(found);
+  }, [id]);
+ 
   return (
-    <div className="bg-amber-50 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-amber-100">
-      <div className="h-64 bg-amber-100 flex items-center justify-center p-4">
-        <div className="text-amber-800 text-center">
-          <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
-          <span className="text-sm">Book Cover</span>
-        </div>
-      </div>
-      
-      <div className="p-5">
-        <h3 className="font-bold text-gray-700 text-lg mb-1 line-clamp-2">Sample Book Title</h3>
-        <p className="text-gray-500 text-sm mb-3">By Author Name</p>
-        <div className="flex justify-between items-center">
-          <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">2023</span>
-          <button className="text-amber-700 hover:text-amber-900">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+    <div className="block bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
+      <img
+        src={image}
+        alt={title}
+        className="h-48 w-full object-cover mb-3 rounded"
+      />
+      <h3 className="text-lg font-semibold text-[#7c7c7c]">{title}</h3>
+      <p className="text-sm text-[#b45309]">{author}</p>
+      <div className='flex gap-2 mt-3'>
+      <button className='px-2 py-1 text-sm text-gray-800 rounded-full bg-cream hover:bg-secondaryColor hover:text-white'>
+        <Link to={`/books/${id}`}>
+           View More
+        </Link>
+        
+      </button>
 
-export default BookCard
+      <button
+        onClick={toggleFav}
+        className={`px-3 py-1 text-sm rounded-full transition
+          ${isFav
+            ? 'bg-secondaryColor text-white hover:text-secondaryColor hover:bg-cream' 
+            : 'bg-white text-pink-500 hover:bg-secondaryColor hover:text-white '
+          }`}
+      >
+        {isFav ? (
+          <>
+            <span>Unfavorite</span> <span className="ml-1">💔</span>
+          </>
+        ) : (
+          <div><span>Favorite</span> <span>❤️</span></div>
+        )}
+      </button>
+    </div>
+    </div>
+  );
+};
+
+export default BookCard;
