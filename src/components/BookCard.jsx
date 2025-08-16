@@ -1,77 +1,99 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FiHeart } from 'react-icons/fi';
 
 const BookCard = ({ book }) => {
   const { user, openAuthModal } = useAuth();
-  const [isFav, setIsFav] = useState(false);
-  
-  const toggleFav = () => {
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  // Check if book data is valid
+  const isValidBook = book && book.id && book.volumeInfo;
+
+  // Check favorite status on initial render
+  useEffect(() => {
+    if (!isValidBook) return;
+    
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    setIsFavorited(favorites.some(favBook => favBook.id === book.id));
+  }, [book, isValidBook]);
+
+  const toggleFavorite = () => {
     if (!user) {
       openAuthModal('signin');
       return;
     }
 
-    const favs = JSON.parse(localStorage.getItem('favorites')) || [];
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let updatedFavorites;
 
-    if (isFav) {
-      const updatedFavs = favs.filter(favBook => favBook.id !== book.id);
-      localStorage.setItem('favorites', JSON.stringify(updatedFavs));
-      setIsFav(false);
+    if (isFavorited) {
+      updatedFavorites = favorites.filter(favBook => favBook.id !== book.id);
     } else {
-      localStorage.setItem('favorites', JSON.stringify([...favs, book])); 
-      setIsFav(true);
+      updatedFavorites = [...favorites, {
+        id: book.id,
+        title: book.volumeInfo.title,
+        author: book.volumeInfo.authors?.join(', '),
+        image: book.volumeInfo.imageLinks?.thumbnail,
+        volumeInfo: book.volumeInfo
+      }];
     }
+
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    setIsFavorited(!isFavorited);
   };
 
-  useEffect(() => {
-    if (!book || !book.id) {
-      console.error("BookCard component received an invalid book object.");
-      return;
-    }
-    const favs = JSON.parse(localStorage.getItem('favorites')) || [];
-    const found = favs.some(favBook => favBook.id === book.id);
-    setIsFav(found);
-  }, [book]);
-  
-  if (!book || !book.volumeInfo) {
-    return null;
+  if (!isValidBook) {
+    return null; // Don't render anything for invalid books
   }
 
+  const { title, authors, imageLinks } = book.volumeInfo;
+  const imageUrl = imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
+  
   return (
-    <div className="block bg-white p-4 rounded-lg shadow hover:shadow-lg transition">
-      <img
-        src={book.volumeInfo?.imageLinks?.thumbnail}
-        alt={book.volumeInfo?.title}
-        className="h-48 w-full object-cover mb-3 rounded"
-      />
-      <h3 className="text-lg font-semibold text-[#7c7c7c]">{book.volumeInfo?.title}</h3>
-      <p className="text-sm text-[#b45309]">{book.volumeInfo?.authors?.join(', ')}</p>
-      <div className='flex gap-2 mt-3'>
-        <button className='px-2 py-1 text-sm text-gray-800 rounded-full bg-cream hover:bg-secondaryColor hover:text-white'>
-          <Link to={`/books/${book.id}`}>
-            View More
-          </Link>
-        </button>
-        <button
-          onClick={toggleFav}
-          className={`px-3 py-1 text-sm rounded-full transition
-            ${isFav
-              ? 'bg-secondaryColor text-white hover:text-secondaryColor hover:bg-cream' 
-              : 'bg-white text-pink-500 hover:bg-secondaryColor hover:text-white '
-            }`}
+    <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-amber-100 h-full flex flex-col">
+      {/* Book Cover */}
+      <div className="flex-1 flex items-center justify-center bg-amber-50 mb-3 rounded overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={title || 'Untitled'}
+          className="h-[100%] object-contain"
+        />
+      </div>
+
+      {/* Book Info */}
+      <div className="mb-3 flex-1">
+        <h3 className="text-lg font-semibold text-gray-700 line-clamp-2">
+          {title || 'Untitled'}
+        </h3>
+        <p className="text-sm text-amber-700 line-clamp-1">
+          {authors?.join(', ') || 'Unknown Author'}
+        </p>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between items-center">
+        <Link
+          to={`/books/${book.id}`}
+          className="px-3 py-1 text-sm bg-amber-100 text-amber-800 rounded-full hover:bg-amber-200 transition-colors"
         >
-          {isFav ? (
-            <>
-              <span>Unfavorite</span> <span className="ml-1">💔</span>
-            </>
-          ) : (
-            <div><span>Favorite</span> <span>❤️</span></div>
-          )}
+          View Details
+        </Link>
+        
+        <button
+          onClick={toggleFavorite}
+          className={`p-2 rounded-full transition-colors ${
+            isFavorited
+              ? 'text-amber-600 hover:text-amber-700'
+              : 'text-gray-400 hover:text-amber-500'
+          }`}
+          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <FiHeart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
         </button>
       </div>
     </div>
-  );
+  ); 
 };
 
 export default BookCard;

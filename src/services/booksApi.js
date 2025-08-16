@@ -1,21 +1,18 @@
-import axios from 'axios';
-const API_URL = "https://www.googleapis.com/books/v1/volumes"
+// services/booksApi.js
+export const fetchBooks = async (query) => {
+  const API_URL = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8`;
 
-const DEFAULT_QUERY = "bestsellers";
-
-export async function fetchBooks(query) {
-    const searchTerm = query && query.trim() ? query : DEFAULT_QUERY;
-    try {
-        const response = await axios.get(API_URL, {
-            params: {
-                q: searchTerm,
-                orderBy: 'relevance',
-                maxResults: 10
-            }
-        });
-        return response.data.items || [];
-    } catch (error) {
-        console.error("Error fetching books:", error);
-        return [];
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Failed to fetch books for query: ${query}. Status: ${res.status}. Response: ${errorText}`);
     }
-}
+    const data = await res.json();
+    return data.items || [];
+  } catch (error) {
+    console.error(error);
+    // Re-throw the error to be caught by the component's useEffect
+    throw error;
+  }
+};

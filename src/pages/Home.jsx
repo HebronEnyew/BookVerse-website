@@ -194,16 +194,30 @@ const Home = () => {
                     <p className="text-sm font-light text-gray-500 mb-1 py-4">SOME QUALITY ITEMS</p>
                     <h2 className="text-3xl font-light text-gray-800 mb-12 text-center font-serif">Featured Books</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
-                    {books.slice(0,5).map((book) => (
-                        <div key={book.id} className="bg-[#F5EAD6] rounded-md shadow-lg overflow-hidden w-[200px] h-[350px] mx-auto">
-                        <div className="p-6 font-serif ">
-                            <img src={book.volumeInfo.imageLinks?.thumbnail} alt="book.volumeInfo.title" className='w-[150px] h-[200px] mx-auto object-cover p-2 bg-gray-50' />
-                            <h3 className="text-md font-semibold text-gray-600 mb-1">{book.volumeInfo.title.length > 10 ? `${book.volumeInfo.title.slice(0,15)}...` : book.volumeInfo.title}</h3>
-                            <p className="text-gray-600 mb-2">{book.volumeInfo.authors.length > 5 ? `${book.volumeInfo.authors?.join(', ').slice(0,2)}` : book.volumeInfo.authors}</p>  
-                            {/* <button className='text-gray-600 my-1 text-1xl py-2 px-2  border-0 rounded-2xl bg-cream mx-auto flex justify-center'>More Details</button>                       */}
+                   {books.slice(0, 5).map((book) => (
+                            <div
+                                key={book.id}
+                                className="bg-[#F5EAD6] rounded-md shadow-lg overflow-hidden w-[200px] h-[350px] mx-auto"
+                            >
+                                <div className="p-6 font-serif">
+                                <img
+                                    src={book.volumeInfo.imageLinks?.thumbnail}
+                                    alt={book.volumeInfo.title}
+                                    className="w-[150px] h-[200px] mx-auto object-cover p-2 bg-gray-50"
+                                />
+                                <h3 className="text-md font-semibold text-gray-600 mb-1">
+                                    {book.volumeInfo.title.length > 10
+                                    ? `${book.volumeInfo.title.slice(0, 15)}...`
+                                    : book.volumeInfo.title}
+                                </h3>
+                                <p className="text-gray-600 mb-2">
+                                    {book.volumeInfo.authors?.length > 5
+                                    ? `${book.volumeInfo.authors.slice(0, 2).join(', ')}`
+                                    : book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
+                                </p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                            ))}
                         </div>
                     <Link to="/browse" className='bg-cream text-gray-700 flex items-end mt-5 md:mt-10 max-md:items-center md:ml-[500px] lg:ml-[900px] font-light'>See More books →</Link>
                     </div>

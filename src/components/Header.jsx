@@ -8,18 +8,11 @@ import { auth } from '../pages/firebase';
 import { useAuth } from '../context/AuthContext';
 
 
-const Header = ({onSearch, onBrowse}) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const Header = ({ onBrowse}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
 
-  const handleSubmit = (e) =>{
-    e.preventDefault();
-    if(!searchTerm.trim()) return;
-    onSearch(searchTerm, navigate);
-    setSearchTerm('');
-  };
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -108,15 +101,7 @@ const Header = ({onSearch, onBrowse}) => {
         {isMobileMenuOpen && (
           <div className="md:hidden  flex bg-cream px-4 py-3">
             <div className="flex flex-col space-y-4">
-              <form onSubmit={handleSubmit}>
-                <input
-                  value={searchTerm}
-                type="text"
-                placeholder="Search books..."
-                className="w-full pl-10 pr-4 py-2 rounded-full text-sm bg-amber-800 text-amber-50 
-                          placeholder-amber-200 focus:outline-none border border-amber-600"
-              />
-            </form>
+          
             <Link to="/" className="font-medium rounded-md px-2 hover:text-amber-200 transition-colors">
               Home
             </Link>
