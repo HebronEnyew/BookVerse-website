@@ -75,7 +75,7 @@ const Home = () => {
 
     return (
         <div className="min-h-screen pb-12 text-center bg-cream" >
-            <div className="relative h-[90vh] mb-[60px]  max-sm:w-[500px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
+            <div className="relative h-[90vh] mb-[60px]  max-sm:w-[400px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
             <div
                 className="absolute inset-0 bg-contain bg-center w-full "
                 style={{
