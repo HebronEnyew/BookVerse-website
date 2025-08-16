@@ -51,13 +51,13 @@ const BookCard = ({ book }) => {
   const imageUrl = imageLinks?.thumbnail || 'https://via.placeholder.com/150x200?text=No+Cover';
   
   return (
-    <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-amber-100 h-full flex flex-col">
+    <div className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-all duration-300 border border-amber-100 h-[90%] flex flex-col">
       {/* Book Cover */}
       <div className="flex-1 flex items-center justify-center bg-amber-50 mb-3 rounded overflow-hidden">
         <img
           src={imageUrl}
           alt={title || 'Untitled'}
-          className="h-[100%] object-contain"
+          className="h-[100%] w-[100%] object-contain"
         />
       </div>
 
