@@ -63,9 +63,17 @@ const BrowseBooks = () => {
 
   if (!books || books.length === 0) {
     return (
-      <p className="text-center mt-12 text-[#7c7c7c] text-lg">
-        {searchTerm ? `No results found for "${searchTerm}".` : 'Try searching...'}
+      <div className="flex flex-col items-center justify-center mt-12 space-y-4">
+       <div className="flex space-x-2 animate-bounce">
+        <div className="w-4 h-6 bg-amber-600 rotate-[-10deg] transform origin-bottom rounded-sm"></div>
+        <div className="w-4 h-8 bg-amber-500 rotate-[10deg] transform origin-bottom rounded-sm"></div>
+        <div className="w-4 h-5 bg-amber-400 rotate-[-5deg] transform origin-bottom rounded-sm"></div>
+      </div>
+      
+      <p className="text-center text-[#7c7c7c] text-lg">
+        {searchTerm ? `Searching for "${searchTerm}"...` : 'Try searching...'}
       </p>
+    </div>
     );
   }
 

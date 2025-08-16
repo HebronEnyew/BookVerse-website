@@ -22,8 +22,8 @@ const Header = ({ onBrowse}) => {
   }
 
   return (
-    <header className="bg-white text-gray-800 shadow-lg sticky top-0 z-50 py-2">
-      <div className="container mx-auto px-4">
+    <header className="bg-white text-gray-800 shadow-lg sticky top-0 z-50 py-2 w-full sm:w-full md:w-full">
+      <div className="container  px-4">
         <div className="flex justify-between items-center py-3">
           <Link to="/" className="flex items-center space-x-2 group">
             <FiBook className="w-6 h-6 text-amber-600 group-hover:text-amber-500 transition-colors" />

@@ -74,8 +74,8 @@ const Home = () => {
     }
 
     return (
-        <div className="min-h-screen pb-12 text-center bg-cream" >
-            <div className="relative h-[90vh] mb-[60px]  max-sm:w-[400px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
+        <div className="min-h-screen max-sm:w-auto pb-12 text-center bg-cream" >
+            <div className="relative h-[90vh] mb-[60px]  max-sm:w-[500px] pr-10 max-sm:h-[550px] mx-auto md:px-[85px] px-[10px]">
             <div
                 className="absolute inset-0 bg-contain bg-center w-full "
                 style={{
@@ -86,24 +86,26 @@ const Home = () => {
             <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
                 <form
-                  onSubmit={handleSearch}
-                  className="relative"
-                >
-                          <input
-                            type="text"
-                            value={searchTerm}
-                            onChange = {(e) => {
-                                e.preventDefault();
-                                setSearchTerm(e.target.value);
-                            }}
-                            placeholder="Search books..."
-                            className="pl-10 pr-4 py-2 w-[300px] mt-5 rounded-full text-sm bg-amber-50 text-gray-800 placeholder-gray-800 
-                                      focus:outline-none focus:ring-2 focus:ring-amber-500 border border-amber-600"
-                          />
-                          <button type="submit" className="absolute md:left-[764px] mt-3 top-1/2 transform -translate-y-1/2 text-amber-600">
-                            <FiSearch />
-                          </button>
-                </form>
+                    onSubmit={handleSearch}
+                    className="relative flex justify-center pt-5"
+                    >
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search books..."
+                        className="pl-10 pr-10 py-2 w-full max-w-xs sm:max-w-md rounded-full text-sm bg-amber-50 text-gray-800 placeholder-gray-800 
+                                focus:outline-none focus:ring-2 focus:ring-amber-500 border border-amber-600"
+                    />
+                    
+                    <button
+                        type="submit"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 text-amber-600 text-lg sm:text-xl pt-3"
+                    >
+                        <FiSearch />
+                    </button>
+                    </form>
+
             <div className="relative z-10 flex items-center justify-center h-full px-6 text-white">
                 <div className="text-center max-w-2xl text-[#f8f4f8]">
                 <h1 className="text-5xl font-bold mb-6 text-white">
@@ -132,7 +134,7 @@ const Home = () => {
                     </div>
                 ) : (
                     books && (
-                        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative">
+                        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 relative ">
                             {/* Left arrow */}
                             <button 
                                 onClick={prevBook}
@@ -143,7 +145,7 @@ const Home = () => {
                             </button>
 
                             {/* Content */}
-                            <div className="lg:w-1/2 space-y-6">
+                            <div className="lg:w-1/2 space-y-6 ">
                                 <h2 className="text-3xl font-bold text-primaryColor">
                                     {book.volumeInfo.title || 'Trending Now'}
                                 </h2>
